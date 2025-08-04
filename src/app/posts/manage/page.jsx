@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; // Added Link import
-import { getAllPosts, deletePost } from '@lib/blogService'; // Added deletePost import
+import { getAllPosts, deletePost } from '../../lib/blogService';
 
 export default function ManagePostsPage() {
   const [posts, setPosts] = useState([]);

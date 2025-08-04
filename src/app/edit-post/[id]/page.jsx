@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getPostById, updatePost } from '@lib/blogService';
+import { getPostById, updatePost } from '../../lib/blogService';
 
 export default function EditPost() {
   const router = useRouter();

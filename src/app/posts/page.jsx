@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { getAllPosts, getPostsByCategory, getPostsByAuthor } from '@lib/blogService';
+import { getAllPosts, getPostsByCategory, getPostsByAuthor } from '../lib/blogService';
 import PostCard from '../components/PostCard';
 export default function PostsPage() {
   const [posts, setPosts] = useState([]);
@@ -32,16 +32,20 @@ export default function PostsPage() {
       setLoading(false);
     }
   };
-
-  const filteredPosts = posts.filter(post => 
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchTerm.toLowerCase())
+const filteredPosts = posts.filter(post => {
+  const term = searchTerm?.toLowerCase() || '';
+  return (
+    post?.title?.toLowerCase().includes(term) ||
+    post?.author?.toLowerCase().includes(term) ||
+    post?.category?.toLowerCase().includes(term)
   );
+});
+
 
   const categories = [...new Set(posts.map(post => post.category))];
   const authors = [...new Set(posts.map(post => post.author))];
 
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 space-y-4">

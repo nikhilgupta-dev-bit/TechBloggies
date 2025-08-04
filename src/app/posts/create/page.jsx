@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { createPost } from '@lib/blogService'; 
+import { createPost } from '../../lib/blogService'; 
 import { useRouter } from 'next/navigation';
 import { SignedIn, useUser } from '@clerk/nextjs';
 

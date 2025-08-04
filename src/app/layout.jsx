@@ -61,12 +61,12 @@ export default function RootLayout({ children }) {
                 {/* Auth Section */}
                 <div className="flex items-center space-x-4">
                   <SignedOut>
-                    <SignInButton mode="modal">
+                    <SignInButton>
                       <button className="text-white hover:text-gray-200 transition-colors font-medium">
                         Sign In
                       </button>
                     </SignInButton>
-                    <SignUpButton mode="modal">
+                    <SignUpButton>
                       <button className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold shadow-md">
                         Get Started
                       </button>
@@ -74,10 +74,10 @@ export default function RootLayout({ children }) {
                   </SignedOut>
 
                   <SignedIn>
-                    <Link href="/posts/manage" className="text-white hover:text-gray-200 transition-colors font-medium mr-2">
+                    <Link href="/dashboard" className="text-white hover:text-gray-200 transition-colors font-medium mr-2">
                       Dashboard
                     </Link>
-                    <Link href="/posts/create" className="bg-black text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold shadow-md">
+                    <Link href="/posts/create" className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold shadow-md">
                       Write Post
                     </Link>
                     <UserButton
@@ -86,6 +86,7 @@ export default function RootLayout({ children }) {
                           avatarBox: "w-8 h-8 shadow-md",
                         },
                       }}
+                      afterSignOutUrl="/"
                     />
                   </SignedIn>
                 </div>

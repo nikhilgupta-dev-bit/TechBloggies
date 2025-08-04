@@ -1,17 +1,11 @@
-import { Client, Databases, ID, Query } from 'appwrite';
-
-const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID);
-
-const databases = new Databases(client);
+import { databases, ID, Query } from './appwrite';
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 const COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID || 'posts';
 
 const handleError = (error, operation) => {
   console.error(`Error ${operation}:`, error);
-  throw new Error(`Failed to ${operation}: ${error.message}`);
+  return { error: true, message: `Failed to ${operation}: ${error.message}` };
 };
 
 const cleanAppwriteDocument = (doc) => {
@@ -25,9 +19,9 @@ const cleanAppwriteDocument = (doc) => {
   return cleanedDoc;
 };
 
-// Function to create a new post 
 export async function createPost(post) {
   try {
+    if (!databases) return { error: true, message: 'Database not available' };
     
     const dataToCreate = cleanAppwriteDocument({
       ...post,
@@ -40,12 +34,16 @@ export async function createPost(post) {
       dataToCreate
     );
   } catch (error) {
-    handleError(error, 'create post');
+    return handleError(error, 'create post');
   }
 }
-// Function to retrieve all posts 
+
 export async function getAllPosts(page = 1, limit = 100) {
   try {
+    if (!databases || !DATABASE_ID || !COLLECTION_ID) {
+      return { posts: [], total: 0, hasMore: false };
+    }
+    
     const offset = (page - 1) * limit;
     const response = await databases.listDocuments(
       DATABASE_ID,
@@ -56,44 +54,65 @@ export async function getAllPosts(page = 1, limit = 100) {
         Query.offset(offset)
       ]
     );
+    
+    if (!response || !response.documents) {
+      return { posts: [], total: 0, hasMore: false };
+    }
+    
     return {
       posts: response.documents,
-      total: response.total,
+      total: response.total || 0,
       hasMore: response.documents.length === limit
     };
   } catch (error) {
-    handleError(error, 'fetch posts');
+    console.error('getAllPosts error:', error);
+    return { posts: [], total: 0, hasMore: false };
   }
 }
-// Function to retrieve a post by its ID
+
 export async function getPostById(postId) {
   try {
-    return await databases.getDocument(DATABASE_ID, COLLECTION_ID, postId);
+    if (!DATABASE_ID || !COLLECTION_ID) {
+      return { error: true, message: 'Database or collection ID not set' };
+    }
+
+    if (!databases) {
+      return { error: true, message: 'Appwrite database client not initialized' };
+    }
+
+    const response = await databases.getDocument(DATABASE_ID, COLLECTION_ID, postId);
+    return response;
   } catch (error) {
-    handleError(error, 'fetch post by ID');
+    return handleError(error, 'fetch post by ID');
   }
 }
-// Function to update a post
+
 export async function updatePost(postId, updates) {
   try {
-    // Clean the updates object to ensure no internal Appwrite attributes are passed
+    if (!databases) return { error: true, message: 'Database not available' };
+    
     const dataToUpdate = cleanAppwriteDocument(updates);
     return await databases.updateDocument(DATABASE_ID, COLLECTION_ID, postId, dataToUpdate);
   } catch (error) {
-    handleError(error, 'update post');
+    return handleError(error, 'update post');
   }
 }
-// Function to delete a post
+
 export async function deletePost(postId) {
   try {
+    if (!databases) return false;
     await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, postId);
     return true;
   } catch (error) {
     handleError(error, 'delete post');
+    return false;
   }
 }
+
 export async function getPostsByCategory(category) {
   try {
+    if (!databases) return [];
+    
     const response = await databases.listDocuments(
       DATABASE_ID,
       COLLECTION_ID,
@@ -104,11 +123,14 @@ export async function getPostsByCategory(category) {
     );
     return response.documents;
   } catch (error) {
-    handleError(error, 'fetch posts by category');
+    return handleError(error, 'fetch posts by category');
   }
 }
+
 export async function getPostsByAuthor(author) {
   try {
+    if (!databases) return [];
+    
     const response = await databases.listDocuments(
       DATABASE_ID,
       COLLECTION_ID,
@@ -119,11 +141,14 @@ export async function getPostsByAuthor(author) {
     );
     return response.documents;
   } catch (error) {
-    handleError(error, 'fetch posts by author');
+    return handleError(error, 'fetch posts by author');
   }
 }
+
 export async function searchPosts(searchTerm) {
   try {
+    if (!databases) return [];
+    
     const response = await databases.listDocuments(
       DATABASE_ID,
       COLLECTION_ID,
@@ -134,6 +159,21 @@ export async function searchPosts(searchTerm) {
     );
     return response.documents;
   } catch (error) {
-    handleError(error, 'search posts');
+    return handleError(error, 'search posts');
+  }
+}
+
+export async function countPosts() {
+  try {
+    if (!databases) return 0;
+    
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_ID,
+      [Query.limit(1)]
+    );
+    return response.total;
+  } catch (error) {
+    return handleError(error, 'count posts');
   }
 }

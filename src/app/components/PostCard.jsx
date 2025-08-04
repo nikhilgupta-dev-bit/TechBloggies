@@ -1,33 +1,28 @@
+'use client';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function PostCard({ post }) {
   return (
-    <div className="bg-fuchsia-400  rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      {post.image_url && (
-        <div className="relative h-48 w-full">
-          <Image
-            src={post.image_url}
-            alt={post.title}
-            fill
-            className="object-cover"
-          />
-        </div>
-      )}
+    <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-6">
         <Link href={`/post/${post.$id}`}>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2 hover:text-blue-600">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2 hover:text-blue-600 cursor-pointer">
             {post.title}
           </h2>
         </Link>
-        <p className="text-gray-600 mb-4">
-          {post.content.substring(0, 150)}...
+
+        <p className="text-gray-500 mb-1">
+          By <span className="font-medium">{post.author}</span> • {post.category}
         </p>
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <span>By {post.author}</span>
-          <span>{new Date(post.created_at).toLocaleDateString()}</span>
+
+        <p className="text-gray-700 mb-4">
+          {post.content?.slice(0, 150)}...
+        </p>
+
+        <div className="text-sm text-gray-500">
+          {new Date(post.created_at).toLocaleDateString()}
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -9,8 +9,7 @@ export default function HeroTitle() {
   useEffect(() => {
     const animatedText = textRef.current;
     if (animatedText) {
-      const originalText = animatedText.textContent?.trim() || "";
-      animatedText.innerHTML = `${originalText} ✨ `.repeat(10);
+      const originalText = animatedText.textContent?.trim() || "";animatedText.innerHTML = `${originalText} ✨ `.repeat(10);
 
       gsap.to(animatedText, {
         xPercent: -50,

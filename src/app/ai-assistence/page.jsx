@@ -19,17 +19,10 @@ export default function PostsPage() {
         },
         body: JSON.stringify({ body: prompt }),
       });
-      const raw = await response.text();
-      console.log('Raw response:', raw);
-
-      let data;
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        setOutput('Invalid JSON response from server.');
-        return;
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate content');
       }
-
       if (response.ok) {
         setOutput(data.output || '');
       } else {
